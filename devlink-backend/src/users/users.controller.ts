@@ -8,13 +8,27 @@ import {
   Patch,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { ApiBody, ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiQuery,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { AuthGuard } from '@nestjs/passport';
+import { RolesGuard } from 'src/auth/roles.guard';
+import { Roles } from 'src/auth/roles.decorator';
+
 @ApiTags('Users')
+@ApiBearerAuth()
 @Controller('users')
+@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
@@ -60,6 +74,8 @@ export class UsersController {
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard) // 🔒 Bảo vệ API với RolesGuard
+  @Roles('admin') // ✅ Chỉ admin mới có quyền xóa user
   @ApiOperation({ summary: 'Delete user by ID' })
   @ApiResponse({ status: HttpStatus.NO_CONTENT, description: 'User deleted' })
   @ApiResponse({ status: HttpStatus.NOT_FOUND, description: 'User not found' })

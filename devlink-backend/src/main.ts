@@ -20,6 +20,7 @@ async function bootstrap() {
     .setDescription('API documentation for DevLink project')
     .setVersion('1.0')
     .addTag('Users')
+    .addBearerAuth() // ✅ Thêm input nhập JWT Token
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
